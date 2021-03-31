@@ -21,7 +21,7 @@
         "tabs"
     ],
     "commands": {
-        "pauseAllMedia": {
+        "firstEvent": {
           "suggested_key": {
             "default": "Ctrl+Shift+PageUp",
             "mac": "Command+Shift+PageUp"
