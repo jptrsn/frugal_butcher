@@ -1,0 +1,49 @@
+{
+    "name": "Frugal Butcher",
+    "description": "Adds keyboard shortcuts to Google Meet",
+    "version": "0.0.0",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "js": [
+                "content.js",
+                "meet-actions.js"
+            ],
+            "matches": [
+                "https://meet.google.com/*"
+            ]
+        }
+    ],
+    "permissions": [
+        "tabs"
+    ],
+    "commands": {
+        "pauseAllMedia": {
+          "suggested_key": {
+            "default": "Ctrl+Shift+PageUp",
+            "mac": "Command+Shift+PageUp"
+          },
+          "description": "Present your screen",
+          "global": "true"
+        },
+        "toggleCaptions": {
+          "suggested_key": {
+            "default": "Ctrl+Shift+Home",
+            "mac": "Command+Shift+Home"
+          },
+          "description": "Toggle closed captions",
+          "global": "true"
+        },
+        "newMeeting": {
+          "suggested_key": {
+            "default": "Ctrl+Shift+PageDown",
+            "mac": "Command+Shift+PageDown"
+          },
+          "description": "Instant meet",
+          "global": "true"
+        }
+      }
+}
