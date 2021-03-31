@@ -38,6 +38,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                     console.log('executeCommand result', result);
                     pendingCommand = null;
                 }
+            } else if (!meetCommands.port) {
+                meetCommands.addPort(sender.tab);
             }
             break;
         }
@@ -47,9 +49,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
 class MeetCommands {
     port;
+    pendingClicks = [];
     clickSequences = {
         newMeeting: ['newMeeting.firstEvent'],
-        firstEvent: ['firstEvent'],
+        firstEvent: ['firstEvent', 'waitForPageLoad', 'joinNow'],
         toggleCaptions: ['toggleCaptions']
     };
     constructor(tab) {
@@ -57,13 +60,15 @@ class MeetCommands {
         this.addPort(tab);
     }
 
-    addPort(tab) {
+    async addPort(tab) {
         this.port = chrome.tabs.connect(tab.id, {name: 'MeetCommands'});
         this.port.onDisconnect.addListener(() => {
             console.log('disconnected');
             delete this.port;
         });
-        this.sendMessage_({action: 'added'});
+        const result = await this.sendMessage_({action: 'added'});
+        console.log(result);
+        this.issuePendingClicks();
     }
 
     async backoff_(fn, retries = 5, delay = 500) {
@@ -74,30 +79,38 @@ class MeetCommands {
                 return await fn();
             } catch(error) {
                 e = error;
-                console.warn(e);
                 attempt++;
                 const timeout = delay * 2 ** attempt;
                 console.log(`attempt ${attempt} in ${timeout} ms`);
                 await new Promise((resolve, reject) => setTimeout(resolve, timeout));
             }
         }
-        console.error('backoff exceeded', e);
-        throw new Error(e);
+        console.warn('backoff exceeded', e);
+        return {success: false, error: e.message};
     }
 
     async executeCommand(command) {
         const clickSequence = this.clickSequences[command];
         for (let click of clickSequence) {
             console.log('executing click', click);
+            if (click === 'waitForPageLoad') {
+                this.pendingClicks = clickSequence.splice(clickSequence.indexOf(click) + 1);
+                console.log('caching for page load', this.pendingClicks);
+                return false;
+            }
             const result = await this.sendMessage_({command: click});
-            console.log('result', result);
         }
+        return true;
     }
 
     sendMessage_(message) {
         const send = () => {
             return new Promise((resolve, reject) => {
-                if (!this.port) return {success: false};
+                if (!this.port) {
+                    console.log('no port - adding to pending clicks', message);
+                    this.pendingClicks.push(message);
+                    return {success: false};
+                }
                 const key = new Date().getTime();
                 const callback = (message, port) => {
                     if (message.key === key) {
@@ -106,6 +119,7 @@ class MeetCommands {
                         if (message.success) {
                             resolve(message);
                         } else {
+                            console.log(message);
                             reject(message);
                         }
                     }
@@ -115,5 +129,17 @@ class MeetCommands {
             })
         };
         return this.backoff_(send, 5);
+    }
+
+    async issuePendingClicks() {
+        while (this.pendingClicks.length) {
+            const click = this.pendingClicks.shift();
+            console.log('executing click', click);
+            if (click === 'waitForPageLoad') {
+                console.log('caching for page load', this.pendingClicks);
+                return false;
+            }
+            const result = await this.sendMessage_({command: click});
+        }
     }
 }

@@ -4,7 +4,7 @@ class MeetActions {
     // State detectors are functions that return true if they have detected the state (as indicated by the key)
     stateDetectors = {
         hold: () => {
-            return !!document.querySelector('c-wiz > div > div > div:nth-child(4) > div.crqnQb > div > div.vgJExf > div > div > div.oORaUb.NONs6c');
+            return !!document.querySelector('#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb');
         },
         meet: () => {
             return !!document.querySelector('[data-allocation-index]');
@@ -138,22 +138,23 @@ class MeetActions {
         chrome.runtime.sendMessage({action: 'addTab'});
     }
 
-    addStateDetection_() {
-        const detectState = () => {
-            let windowState;
-            for (let [state, detector] of Object.entries(this.stateDetectors)) {
-                if (detector()) {
-                    windowState = state;
-                    break;
-                }
-            }
-            if (windowState && windowState !== this.currentState) {
-                console.log(`state change ${this.state} => ${windowState}`);
-                this.configureForState_(windowState);
+    detectState() {
+        let windowState;
+        for (let [state, detector] of Object.entries(this.stateDetectors)) {
+            if (detector()) {
+                windowState = state;
+                break;
             }
         }
-        setInterval(() => (detectState()), 1000);
-        detectState();
+        if (windowState && windowState !== this.currentState) {
+            console.log(`state change ${this.state} => ${windowState}`);
+            this.configureForState_(windowState);
+        }
+    }
+
+    addStateDetection_() {
+        setInterval(() => ((this.detectState())), 1000);
+        this.detectState();
         console.log('state detection added');
     }
 
@@ -171,6 +172,9 @@ class MeetActions {
     }
 
     async executeCommand(command) {
+        if (!this.currentState) {
+            this.detectState();
+        }
         const keyPath = command.split('.');
         console.log(keyPath);
         let ctrls = this.controls[this.currentState];
@@ -180,7 +184,6 @@ class MeetActions {
             if (!ctrl || !ctrl.element) {
                 return false;
             }
-            console.log('clickling', k, ctrl.element);
             ctrl.element.click();
             if (ctrl.children) {
                 ctrls = ctrl.children;
@@ -201,8 +204,8 @@ class MeetActions {
             }
             port.postMessage(Object.assign({success}, message));
         } catch(e) {
-            console.warn(e);
-            port.postMessage(Object.assign({success: false}, message));
+            console.error(e);
+            port.postMessage(Object.assign({success: false, error: e.message}, message));
         }
         
     }
