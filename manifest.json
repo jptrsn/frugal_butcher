@@ -26,24 +26,27 @@
             "default": "Ctrl+Shift+PageUp",
             "mac": "Command+Shift+PageUp"
           },
-          "description": "Present your screen",
-          "global": "true"
+          "description": "Auto-join the next meet in your calendar",
+          "global": true
         },
-        "toggleCaptions": {
-          "suggested_key": {
-            "default": "Ctrl+Shift+Home",
-            "mac": "Command+Shift+Home"
-          },
-          "description": "Toggle closed captions",
-          "global": "true"
-        },
-        "newMeeting": {
+        "instantMeet": {
           "suggested_key": {
             "default": "Ctrl+Shift+PageDown",
             "mac": "Command+Shift+PageDown"
           },
-          "description": "Instant meet",
-          "global": "true"
+          "description": "Start an instant meet"
+        },
+        "muteAudio": {
+          "description": "Mute the audio"
+        },
+        "muteVideo": {
+          "description": "Mute the video"
+        },
+        "shareScreen": {
+          "suggested_key": {
+            "default": "Ctrl+Shift+Home"
+          },
+          "description": "Share screen 1"
         }
       }
 }

@@ -8,38 +8,63 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.commands.onCommand.addListener(async (command) => {
     console.log('command', command);
     if (meetCommands) {
+        if (!meetCommands.port) {
+            console.log('no port');
+            const tabs = await chrome.tabs.query({url: 'https://meet.google.com/*'})
+            if (tabs.length === 1) {
+                await meetCommands.addPort(tabs[0]);
+                console.log('added port', meetCommands.port);
+            }
+        }
         const result = await meetCommands.executeCommand(command);
         console.log('result', result);
-    } else if (command === 'newMeeting' || command === 'firstEvent') {
+    } else {
         console.log('meet tab not initialized = searching...');
         const tabs = await chrome.tabs.query({url: 'https://meet.google.com/*'})
         if (tabs.length === 1) {
             meetCommands = new MeetCommands(tabs[0]);
-            return meetCommands.executeCommand(command);
+            const result = await meetCommands.executeCommand(command);
+            console.log('executeCommand result', result);
+        } else if (!tabs.length) {
+            if (command === 'instantMeet' || command === 'firstEvent') {
+                console.log('opening tab');
+                pendingCommand = command;
+                await chrome.tabs.create({url: 'https://meet.google.com'});
+            } else {
+                console.warn('Command issued but no tab detected.');
+            }
         } else {
-            console.log('opening tab');
-            pendingCommand = command;
-            const tab = await chrome.tabs.create({url: 'https://meet.google.com'});
-            console.log('tab', tab);
-            
-        }
+            console.error('Multipe meet tabs detected', tabs);
+        }    
     }
 });
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    console.log('message', message, sender);
+    console.log('message', message);
     switch (message.action) {
         case 'addTab': {
-            if (!meetCommands) {
+            if (!meetCommands && pendingCommand) {
+                const command = `${pendingCommand}`;
+                pendingCommand = null;
                 meetCommands = new MeetCommands(sender.tab);
-                if (pendingCommand) {
-                    console.log(`issuing pending command ${pendingCommand}`);
-                    const result = await meetCommands.executeCommand(pendingCommand);
-                    console.log('executeCommand result', result);
-                    pendingCommand = null;
+                console.log(`issuing pending command ${command}`);
+                const result = await meetCommands.executeCommand(command);
+                console.log('executeCommand result', result);
+            } else if (meetCommands && !meetCommands.port && pendingCommand) {
+                const command = `${pendingCommand}`;
+                pendingCommand = null;
+                await meetCommands.addPort(sender.tab);
+                console.log(`issuing pending command ${command}`);
+                const result = await meetCommands.executeCommand(command);
+                console.log('executeCommand result', result);
+            } else if (meetCommands && meetCommands.pendingClicks.length) {
+                if (!meetCommands.port) {
+                    await meetCommands.addPort(sender.tab);
                 }
-            } else if (!meetCommands.port) {
-                meetCommands.addPort(sender.tab);
+                console.log('issueing pending clicks', meetCommands.pendingClicks);
+                await meetCommands.issuePendingClicks();
+            } else {
+                console.log('nothing pending');
             }
             break;
         }
@@ -49,26 +74,38 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
 class MeetCommands {
     port;
+    tabId;
     pendingClicks = [];
     clickSequences = {
-        newMeeting: ['newMeeting.firstEvent'],
         firstEvent: ['firstEvent', 'waitForPageLoad', 'joinNow'],
+        instantMeet: ['newMeeting.startInstant'],
+        muteAudio: ['muteAudio'],
+        muteVideo: ['muteVideo'],
+        shareScreen: ['presentNow.screen'],
         toggleCaptions: ['toggleCaptions']
     };
     constructor(tab) {
-        console.log('MeetCommands constructor');        
         this.addPort(tab);
     }
 
     async addPort(tab) {
+        if (this.tabId && tab.id === this.tabId && this.port) {
+            console.error('already connected to tab');
+            return;
+        }
+        this.tabId = tab.id;
         this.port = chrome.tabs.connect(tab.id, {name: 'MeetCommands'});
         this.port.onDisconnect.addListener(() => {
             console.log('disconnected');
             delete this.port;
         });
-        const result = await this.sendMessage_({action: 'added'});
-        console.log(result);
-        this.issuePendingClicks();
+    }
+
+    closePort_() {
+        if (this.port) {
+            this.port.disconnect();
+            delete this.port;
+        }
     }
 
     async backoff_(fn, retries = 5, delay = 500) {
@@ -76,10 +113,10 @@ class MeetCommands {
         let e;
         while (attempt < retries) {
             try {
+                attempt++
                 return await fn();
             } catch(error) {
                 e = error;
-                attempt++;
                 const timeout = delay * 2 ** attempt;
                 console.log(`attempt ${attempt} in ${timeout} ms`);
                 await new Promise((resolve, reject) => setTimeout(resolve, timeout));
@@ -90,33 +127,36 @@ class MeetCommands {
     }
 
     async executeCommand(command) {
-        const clickSequence = this.clickSequences[command];
-        for (let click of clickSequence) {
-            console.log('executing click', click);
-            if (click === 'waitForPageLoad') {
-                this.pendingClicks = clickSequence.splice(clickSequence.indexOf(click) + 1);
-                console.log('caching for page load', this.pendingClicks);
-                return false;
-            }
-            const result = await this.sendMessage_({command: click});
+        if (!this.port) {
+            console.error('execute command called with no port', command);
         }
-        return true;
+        const clickSequence = [...this.clickSequences[command]];
+        const result = await this.sendClickArray(clickSequence);
+        this.closePort_();
+        return result;
     }
 
     sendMessage_(message) {
         const send = () => {
             return new Promise((resolve, reject) => {
                 if (!this.port) {
-                    console.log('no port - adding to pending clicks', message);
-                    this.pendingClicks.push(message);
-                    return {success: false};
+                    console.log('no port - adding to pending clicks', message.command);
+                    this.pendingClicks.push(message.command);
+                    resolve({success: false, fatal: true, message: 'no port'});
                 }
                 const key = new Date().getTime();
+                const timeoutId = setTimeout(() => {
+                    resolve({success: false, error: 'timeout'});
+                }, 30000);
                 const callback = (message, port) => {
+                    console.log('callback', message);
+                    clearTimeout(timeoutId);
                     if (message.key === key) {
                         delete message.key;
                         port.onMessage.removeListener(callback);
                         if (message.success) {
+                            resolve(message);
+                        } else if (message.fatal) {
                             resolve(message);
                         } else {
                             console.log(message);
@@ -124,7 +164,9 @@ class MeetCommands {
                         }
                     }
                 };
+                
                 this.port.onMessage.addListener(callback);
+                console.log('sendMessage', message, key);
                 this.port.postMessage(Object.assign({key}, message));
             })
         };
@@ -132,14 +174,29 @@ class MeetCommands {
     }
 
     async issuePendingClicks() {
-        while (this.pendingClicks.length) {
-            const click = this.pendingClicks.shift();
-            console.log('executing click', click);
+        const result = await this.sendClickArray(this.pendingClicks);
+        this.closePort_();
+        return result;
+    }
+
+    async sendClickArray(clickArray) {
+        while (clickArray.length) {
+            const click = clickArray.shift();
             if (click === 'waitForPageLoad') {
-                console.log('caching for page load', this.pendingClicks);
-                return false;
+                console.log('caching for page load', clickArray);
+                this.pendingClicks = clickArray;
+                return true;
             }
             const result = await this.sendMessage_({command: click});
+            console.log('click result', result);
+            if (!result.success) {
+                if (!result.fatal) {
+                    this.pendingClicks = [clickArray];
+                }
+                return false;
+            }
+            
         }
+        return true; 
     }
 }

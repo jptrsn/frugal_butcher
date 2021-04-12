@@ -1,10 +1,11 @@
 class MeetActions {
     port;
     currentState;
-    // State detectors are functions that return true if they have detected the state (as indicated by the key)
+    // State detectors are functions that return true if they have detected the state of the tab (as indicated by the key)
+    // States correspond to different views loaded into the DOM, and defines the set of element controls we can use
     stateDetectors = {
         hold: () => {
-            return !!document.querySelector('#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb');
+            return !!document.querySelector('#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.d7iDfe.NONs6c > div > div.Sla0Yd > div > div.kgb0ld > div');
         },
         meet: () => {
             return !!document.querySelector('[data-allocation-index]');
@@ -19,106 +20,95 @@ class MeetActions {
         home: {
             newMeeting: {
                 selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div > button',
-                element: null,
                 children: {
-                    'createForLater': {
+                    createForLater: {
                         selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div > ul > li:nth-child(1)',
                     },
-                    'startInstant': {
+                    startInstant: {
                         selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div > ul > li:nth-child(2)',
-                        element: null
+                        redirect: true
                     },
-                    'startInstant': {
-                        selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div > ul > li:nth-child(3)',
-                        element: null
+                    startInstant: {
+                        selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div > ul > li:nth-child(3)'
                     }
                 }
             },
             firstEvent: {
-                selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(2) > c-wiz > c-wiz > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(5) > c-wiz > div > c-wiz:nth-child(1) > div > div',
-                element: null
+                selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(2) > c-wiz > c-wiz > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(5) > c-wiz > div > c-wiz:nth-child(1) > div > div'
             }
         },
         hold: {
             joinNow: {
-                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.d7iDfe.NONs6c > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1)',
-                element: null
+                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.d7iDfe.NONs6c > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1)'
             },
             present: {
-                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.d7iDfe.NONs6c > div > div.Sla0Yd > div > div.XCoPyb > div.uArJ5e.UQuaGc.kCyAyd.QU4Gid.xKiqt.cd29Sd.M9Bg4d',
-                element: null
+                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.d7iDfe.NONs6c > div > div.Sla0Yd > div > div.XCoPyb > div.uArJ5e.UQuaGc.kCyAyd.QU4Gid.xKiqt.cd29Sd.M9Bg4d'
             },
             cast: {
-                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.d7iDfe.NONs6c > div > div.Sla0Yd > div > div.kgb0ld > div',
-                element: null
+                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.d7iDfe.NONs6c > div > div.Sla0Yd > div > div.kgb0ld > div'
             },
             changeBackground: {
-                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.ZUpb4c > div.oORaUb.NONs6c > div > div.Rd6sU > div',
-                element: null
+                selector: '#yDmH0d > c-wiz > div > div > div:nth-child(9) > div.crqnQb > div > div > div.vgJExf > div > div.KieQAe > div.ZUpb4c > div.oORaUb.NONs6c > div > div.Rd6sU > div'
             }
         },
         meet: {
-            'raiseHand': {
-                selector: '[aria-label="Raise hand"]',
-                element: null
+            raiseHand: {
+                selector: '[aria-label="Raise hand"]'
             },
-            'toggleCaptions': {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(3) > div:nth-child(2) > div',
-                element: null
+            toggleCaptions: {
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(3) > div:nth-child(2) > div'
             },
-            'presentNow': {
+            presentNow: {
                 selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(3) > div:nth-child(3) > div',
-                element: null
-            },
-            'moreActions': {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(3) > div:nth-child(4) > div',
-                element: null,
                 children: {
-                    'cast': {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(1)',
-                        element: null
+                    screen: {
+                        selector: 'span[aria-label="Your entire screen"]'
                     },
-                    'whiteboard': {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(2)',
-                        element: null
+                    window: {
+                        selector: 'body > div:nth-child(6) > div > div > span:nth-child(3)'
                     },
-                    'changeLayout': {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(3)',
-                        element: null
-                    },
-                    'fullScreen': {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(4)',
-                        element: null
-                    },
-                    'changeBackground': {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(5)',
-                        element: null
-                    },
-                    'settings': {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(11)',
-                        element: null
+                    tab: {
+                        selector: 'body > div:nth-child(6) > div > div > span:nth-child(4)'
                     }
                 }
             },
-            'chat': {
-                selector: '[aria-label="Chat with everyone"]',
-                element: null
+            moreOptions: {
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(3) > div:nth-child(4) > div',
+                children: {
+                    cast: {
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(1)'
+                    },
+                    whiteboard: {
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(2)'
+                    },
+                    changeLayout: {
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(3)'
+                    },
+                    fullScreen: {
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(4)'
+                    },
+                    changeBackground: {
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(5)'
+                    },
+                    settings: {
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(11)'
+                    }
+                }
             },
-            'attendees': {
-                selector: '[aria-label="Show everyone"]',
-                element: null
+            chat: {
+                selector: '[aria-label="Chat with everyone"]'                
             },
-            'muteAudio': {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(1) > div',
-                element: null
+            attendees: {
+                selector: '[aria-label="Show everyone"]'                
             },
-            'hangup': {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(2) > div',
-                element: null
+            muteAudio: {
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(1) > div'                
             },
-            'muteVideo': {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > div',
-                element: null
+            hangup: {
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(2) > div'                
+            },
+            muteVideo: {
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > div'                
             }
         }
     }
@@ -130,11 +120,10 @@ class MeetActions {
             this.port = port;
             this.port.onDisconnect.addListener(() => {
                 console.log('port disconnected');
-                delete this.port;
+                this.port = null;
             });
             this.port.onMessage.addListener(this.handleMessage_);
         });
-        this.addStateDetection_();
         chrome.runtime.sendMessage({action: 'addTab'});
     }
 
@@ -146,89 +135,57 @@ class MeetActions {
                 break;
             }
         }
-        if (windowState && windowState !== this.currentState) {
-            console.log(`state change ${this.state} => ${windowState}`);
-            this.configureForState_(windowState);
-        }
+        return windowState;
     }
 
-    addStateDetection_() {
-        setInterval(() => ((this.detectState())), 1000);
-        this.detectState();
-        console.log('state detection added');
-    }
-
-    configureForState_(state) {
-        console.log('configureForState', state);
-        if (this.currentState) {
-            Object.entries(this.controls[this.currentState]).forEach(([key, ctrl]) => {
-                delete ctrl.element;
-            });
-        }
-        Object.entries(this.controls[state]).forEach(([key, ctrl]) => {
-            this.addElementDetector_(key, ctrl);
-        });
-        this.currentState = state;
-    }
-
-    async executeCommand(command) {
-        if (!this.currentState) {
-            this.detectState();
+    async executeCommand(command, {port, message}) {
+        const state = this.detectState();
+        if (!state) {
+            console.error('no state', state);
+            return {success: false, error: 'no state detected'};
+        } else {
+            console.log('current state', state);
         }
         const keyPath = command.split('.');
-        console.log(keyPath);
-        let ctrls = this.controls[this.currentState];
+        let ctrls = this.controls[state];
         for (const k of keyPath) {
             const ctrl = ctrls[k];
-            ctrl.element = document.querySelectorAll(ctrl.selector)[0];
-            if (!ctrl || !ctrl.element) {
-                return false;
+            if (!ctrl) {
+                console.error('no control', k, state);
+                return {success: false, error: `no control for ${k}`};
             }
-            ctrl.element.click();
-            if (ctrl.children) {
+            const element = document.querySelectorAll(ctrl.selector)[0];
+            if (!element) {
+                console.error(`FATAL: selector found no element for ${k}; command ${command}`);
+                return {success: false, fatal: true, error: `FATAL: selector found no element for ${k}; command ${command}`};
+            }
+            if (ctrl.redirect) {
+                message.success = true;
+                port.postMessage({message})
+            } else if (ctrl.children) {
                 ctrls = ctrl.children;
             }
-            
+            element.click();
         }
-        return true;
+        return {success: true};
     }
 
     handleMessage_ = async (message, port) => {
         try {
             console.log('handleMessage', message);
-            let success = true;
+            let rtn = {
+                success: true,
+                message
+            };
             if (message.command) {
-                success = await this.executeCommand(message.command);
-            } else if (message.action === 'addTab') {
-                success = this.addStateDetection_();
+                const result = await this.executeCommand(message.command, {port, message});
+                Object.assign(rtn, result);
             }
-            port.postMessage(Object.assign({success}, message));
+            port.postMessage(rtn);
         } catch(e) {
             console.error(e);
-            port.postMessage(Object.assign({success: false, error: e.message}, message));
+            port.postMessage(Object.assign({success: false, fatal: true, error: e.message}, message));
         }
         
-    }
-
-    async addElementDetector_(key, control) {
-        let attempts = 0;
-        while (attempts < 5) {
-            const els = document.querySelectorAll(control.selector);
-            if (els.length) {
-                control.element = els[0];
-                if (els.length > 1) {
-                    console.warn('too broad selector', control.selector);
-                    console.log(els);
-                }
-                break;
-            }
-            attempts++;
-            await new Promise((resolve, reject) => setTimeout(resolve, 500 * 2 ** attempts));
-        }
-        console.log(`${key} element configured`, control.element);
-        if (this.port) {
-            this.port.postMessage({message: 'listenerAdded', key, success: true});
-        }
-        return control.element;
     }
 }
