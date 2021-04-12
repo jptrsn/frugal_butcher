@@ -1,0 +1,19 @@
+.popup {
+    width: 160px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.popup > h3 {
+    margin: 0;
+}
+
+.popup > .buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}

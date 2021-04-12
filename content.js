@@ -1,7 +1,7 @@
-document.onreadystatechange = (ev) => {
-    console.log('onreadystatechange', document.readyState);
-    
-    if (document.readyState === 'complete') {
-        const meetActions = new MeetActions();
-    }
-}
+var s = document.createElement('script');
+// TODO: add "script.js" to web_accessible_resources in manifest.json
+s.src = chrome.runtime.getURL('meet-actions.js');
+s.onload = function() {
+    this.remove();
+};
+(document.head || document.documentElement).appendChild(s);

@@ -1,3 +1,11 @@
+document.onreadystatechange = (ev) => {
+    console.log('onreadystatechange', document.readyState);
+    
+    if (document.readyState === 'complete') {
+        const meetActions = new MeetActions();
+    }
+}
+
 class MeetActions {
     port;
     currentState;
@@ -19,16 +27,16 @@ class MeetActions {
     controls = {
         home: {
             newMeeting: {
-                selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div > button',
+                selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(1) > div > button',
                 children: {
                     createForLater: {
                         selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div > ul > li:nth-child(1)',
                     },
                     startInstant: {
-                        selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div > ul > li:nth-child(2)',
+                        selector: '#yDmH0d > c-wiz > div > div.S3RDod > div > div.Qcuypc > div.Ez8Iud > div > div.VfPpkd-xl07Ob-XxIAqe-OWXEXe-oYxtQd > div:nth-child(2) > div > ul > li.JS1Zae.VfPpkd-StrnGf-rymPhb-ibnC6b.VfPpkd-rymPhb-ibnC6b-OWXEXe-tPcied-hXIJHe',
                         redirect: true
                     },
-                    startInstant: {
+                    scheduleInCalendar: {
                         selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div > ul > li:nth-child(3)'
                     }
                 }
@@ -76,22 +84,22 @@ class MeetActions {
                 selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(3) > div:nth-child(4) > div',
                 children: {
                     cast: {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(1)'
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span[aria-label="Cast this meeting"]'
                     },
                     whiteboard: {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(2)'
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span.z80M1.vpS9Pb'
                     },
                     changeLayout: {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(3)'
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span[aria-label="Change layout"]'
                     },
                     fullScreen: {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(4)'
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span[aria-label="Full screen"]'
                     },
                     changeBackground: {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(5)'
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span[aria-label="Change background"]'
                     },
                     settings: {
-                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span:nth-child(11)'
+                        selector: 'body > div.JPdR6b.e5Emjc.CIYi0d.jvUMfb.yOCuXd.qjTEB > div > div > span[aria-label="Settings"]'
                     }
                 }
             },
@@ -102,13 +110,13 @@ class MeetActions {
                 selector: '[aria-label="Show everyone"]'                
             },
             muteAudio: {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(1) > div'                
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(1) > div > div > div'
             },
             hangup: {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(2) > div'                
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(2) > div > div > div'     
             },
             muteVideo: {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > div'                
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > div > div > div'     
             }
         }
     }
@@ -139,6 +147,7 @@ class MeetActions {
     }
 
     async executeCommand(command, {port, message}) {
+        if (!command) return {success: true};
         const state = this.detectState();
         if (!state) {
             console.error('no state', state);
@@ -154,18 +163,24 @@ class MeetActions {
                 console.error('no control', k, state);
                 return {success: false, error: `no control for ${k}`};
             }
-            const element = document.querySelectorAll(ctrl.selector)[0];
-            if (!element) {
-                console.error(`FATAL: selector found no element for ${k}; command ${command}`);
+            const elements = document.querySelectorAll(ctrl.selector);
+            
+            if (!elements.length) {
+                console.log(`FATAL: selector found no element for ${k}; command ${command}`);
+                console.log(ctrl.selector, elements);
                 return {success: false, fatal: true, error: `FATAL: selector found no element for ${k}; command ${command}`};
             }
+            const element = elements[0];
             if (ctrl.redirect) {
                 message.success = true;
                 port.postMessage({message})
             } else if (ctrl.children) {
                 ctrls = ctrl.children;
             }
-            element.click();
+            element.dispatchEvent(new Event('click', {bubbles: true}));
+            console.log('clicked element', element);
+            await new Promise((res, rej) => setTimeout(res, 1500));
+            
         }
         return {success: true};
     }
@@ -173,10 +188,7 @@ class MeetActions {
     handleMessage_ = async (message, port) => {
         try {
             console.log('handleMessage', message);
-            let rtn = {
-                success: true,
-                message
-            };
+            let rtn = Object.assign({success: true}, message);
             if (message.command) {
                 const result = await this.executeCommand(message.command, {port, message});
                 Object.assign(rtn, result);

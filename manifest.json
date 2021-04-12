@@ -1,11 +1,16 @@
 {
     "name": "Frugal Butcher",
     "description": "Adds keyboard shortcuts to Google Meet",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "manifest_version": 3,
-    "icons": { "16": "icon16.png",
-           "48": "icon48.png",
-          "128": "icon128.png" },
+    "icons": { 
+        "16": "assets/icon16.png",
+        "48": "assets/icon48.png",
+        "128": "assets/icon128.png" 
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
     "background": {
         "service_worker": "background.js"
     },
@@ -26,30 +31,38 @@
     "commands": {
         "firstEvent": {
           "suggested_key": {
-            "default": "Ctrl+Shift+PageUp",
-            "mac": "Command+Shift+PageUp"
+            "default": "Alt+Shift+F",
+            "mac": "Alt+Shift+F"
           },
           "description": "Auto-join the next meet in your calendar",
           "global": true
         },
-        "instantMeet": {
+        "activateMeet": {
+          "description": "Activate the meet tab (bring to foreground)",
           "suggested_key": {
-            "default": "Ctrl+Shift+PageDown",
-            "mac": "Command+Shift+PageDown"
+            "default": "Alt+Shift+A",
+            "mac": "Alt+Shift+A"
           },
+          "global": true
+        },
+        "instantMeet": {
           "description": "Start an instant meet"
         },
         "muteAudio": {
-          "description": "Mute the audio"
+          "description": "Mute the audio",
+          "suggested_key": {
+            "default": "Alt+Shift+M",
+            "mac": "Alt+Shift+M"
+          },
+          "global": true
         },
         "muteVideo": {
-          "description": "Mute the video"
-        },
-        "shareScreen": {
+          "description": "Mute the video",
           "suggested_key": {
-            "default": "Ctrl+Shift+Home"
+            "default": "Alt+Shift+V",
+            "mac": "Alt+Shift+V"
           },
-          "description": "Share screen 1"
+          "global": true
         }
       }
 }

@@ -7,6 +7,13 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.commands.onCommand.addListener(async (command) => {
     console.log('command', command);
+    if (command === 'activateMeet') {
+        const tabs = await chrome.tabs.query({url: 'https://meet.google.com/*'})
+            if (tabs.length === 1) {
+                chrome.tabs.update(tabs[0].id, {highlighted: true});
+            }
+        return;
+    }
     if (meetCommands) {
         if (!meetCommands.port) {
             console.log('no port');
@@ -14,6 +21,8 @@ chrome.commands.onCommand.addListener(async (command) => {
             if (tabs.length === 1) {
                 await meetCommands.addPort(tabs[0]);
                 console.log('added port', meetCommands.port);
+            } else {
+                return await createMeetTab(command);
             }
         }
         const result = await meetCommands.executeCommand(command);
@@ -27,9 +36,7 @@ chrome.commands.onCommand.addListener(async (command) => {
             console.log('executeCommand result', result);
         } else if (!tabs.length) {
             if (command === 'instantMeet' || command === 'firstEvent') {
-                console.log('opening tab');
-                pendingCommand = command;
-                await chrome.tabs.create({url: 'https://meet.google.com'});
+                await createMeetTab(command);
             } else {
                 console.warn('Command issued but no tab detected.');
             }
@@ -61,16 +68,25 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
                 if (!meetCommands.port) {
                     await meetCommands.addPort(sender.tab);
                 }
-                console.log('issueing pending clicks', meetCommands.pendingClicks);
+                console.log('issuing pending clicks', meetCommands.pendingClicks);
                 await meetCommands.issuePendingClicks();
             } else {
                 console.log('nothing pending');
             }
             break;
         }
+        case 'openConfig': {
+            await chrome.tabs.create({url: 'chrome://extensions/shortcuts'});        
+        }
     }
     sendResponse({success: true});
 })
+
+const createMeetTab = async (command) => {
+    console.log('opening tab');
+    pendingCommand = command;
+    await chrome.tabs.create({url: 'https://meet.google.com'});
+}
 
 class MeetCommands {
     port;
@@ -82,7 +98,8 @@ class MeetCommands {
         muteAudio: ['muteAudio'],
         muteVideo: ['muteVideo'],
         shareScreen: ['presentNow.screen'],
-        toggleCaptions: ['toggleCaptions']
+        toggleCaptions: ['toggleCaptions'],
+        spotlight: ['moreOptions.changeLayout']
     };
     constructor(tab) {
         this.addPort(tab);
@@ -99,9 +116,11 @@ class MeetCommands {
             console.log('disconnected');
             delete this.port;
         });
+        chrome.tabs.update(this.tabId, {highlighted: true});
     }
 
     closePort_() {
+        console.log('close port', this.port);
         if (this.port) {
             this.port.disconnect();
             delete this.port;
