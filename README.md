@@ -25,3 +25,5 @@ Visit the Chrome Web Store listing and install for your Chrome profile
 
 ## Configuration
 You can set up the shortcuts by clicking on the extension icon and clicking the button, or by navigating your browser to [chrome://extensions/shortcuts](chrome://extensions/shortcuts).
+
+![Screenshot](assets/screenshot.png "Screenshot")
