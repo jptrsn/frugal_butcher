@@ -1,12 +1,12 @@
 {
     "name": "Frugal Butcher",
-    "description": "Adds keyboard shortcuts to Google Meet",
+    "description": "Adds user-configurable, custom, and additional keyboard shortcuts to Google Meet",
     "version": "0.0.1",
     "manifest_version": 3,
-    "icons": { 
+    "icons": {
         "16": "assets/icon16.png",
         "48": "assets/icon48.png",
-        "128": "assets/icon128.png" 
+        "128": "assets/icon128.png"
     },
     "action": {
         "default_popup": "popup.html"
@@ -14,55 +14,49 @@
     "background": {
         "service_worker": "background.js"
     },
-    "content_scripts": [
-        {
-            "js": [
-                "content.js",
-                "meet-actions.js"
-            ],
-            "matches": [
-                "https://meet.google.com/*"
-            ]
-        }
-    ],
+    "content_scripts": [{
+        "js": [
+            "content.js",
+            "meet-actions.js"
+        ],
+        "matches": [
+            "https://meet.google.com/*"
+        ]
+    }],
     "permissions": [
         "tabs"
     ],
     "commands": {
         "firstEvent": {
-          "suggested_key": {
-            "default": "Alt+Shift+F",
-            "mac": "Alt+Shift+F"
-          },
-          "description": "Auto-join the next meet in your calendar",
-          "global": true
-        },
-        "activateMeet": {
-          "description": "Activate the meet tab (bring to foreground)",
-          "suggested_key": {
-            "default": "Alt+Shift+A",
-            "mac": "Alt+Shift+A"
-          },
-          "global": true
+            "description": "Auto-join the next meet in your calendar",
+            "suggested_key": {
+                "default": "Alt+Shift+F",
+                "mac": "Alt+Shift+F"
+            }
         },
         "instantMeet": {
-          "description": "Start an instant meet"
+            "description": "Start an instant meet"
+        },
+        "activateMeet": {
+            "description": "Activate the meet tab (bring to foreground)",
+            "suggested_key": {
+                "default": "Alt+Shift+A",
+                "mac": "Alt+Shift+A"
+            }
         },
         "muteAudio": {
-          "description": "Mute the audio",
-          "suggested_key": {
-            "default": "Alt+Shift+M",
-            "mac": "Alt+Shift+M"
-          },
-          "global": true
+            "description": "Mute the audio",
+            "suggested_key": {
+                "default": "Alt+Shift+M",
+                "mac": "Alt+Shift+M"
+            }
         },
         "muteVideo": {
-          "description": "Mute the video",
-          "suggested_key": {
-            "default": "Alt+Shift+V",
-            "mac": "Alt+Shift+V"
-          },
-          "global": true
+            "description": "Mute the video",
+            "suggested_key": {
+                "default": "Alt+Shift+V",
+                "mac": "Alt+Shift+V"
+            }
         }
-      }
+    }
 }
