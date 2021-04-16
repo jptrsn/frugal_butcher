@@ -1,7 +1,7 @@
 {
     "name": "Frugal Butcher",
     "description": "Adds user-configurable, custom, and additional keyboard shortcuts to Google Meet",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "manifest_version": 3,
     "icons": {
         "16": "assets/icon16.png",
@@ -34,9 +34,6 @@
                 "mac": "Alt+Shift+F"
             }
         },
-        "instantMeet": {
-            "description": "Start an instant meet"
-        },
         "activateMeet": {
             "description": "Activate the meet tab (bring to foreground)",
             "suggested_key": {
@@ -57,6 +54,12 @@
                 "default": "Alt+Shift+V",
                 "mac": "Alt+Shift+V"
             }
+        },
+        "raiseHand": {
+            "description": "Raise your hand"
+        },
+        "instantMeet": {
+            "description": "Start and join an instant meet"
         }
     }
 }

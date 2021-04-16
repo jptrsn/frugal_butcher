@@ -1,6 +1,6 @@
 document.onreadystatechange = (ev) => {
     console.log('onreadystatechange', document.readyState);
-    
+
     if (document.readyState === 'complete') {
         const meetActions = new MeetActions();
     }
@@ -42,7 +42,9 @@ class MeetActions {
                 }
             },
             firstEvent: {
-                selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(2) > c-wiz > c-wiz > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(5) > c-wiz > div > c-wiz:nth-child(1) > div > div'
+                selector: '#yDmH0d > c-wiz > div > div.S3RDod > div > div.C9bDzc > c-wiz > c-wiz > div:nth-child(1) > div.VdLOD.yUoCvf > div > div.d5kC8b > c-wiz > div > c-wiz:nth-child(1) > div > div',
+                redirect: true
+                    // selector: 'c-wiz > div > div:nth-child(2) > div > div:nth-child(2) > c-wiz > c-wiz > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(5) > c-wiz > div > c-wiz:nth-child(1) > div > div'
             }
         },
         hold: {
@@ -104,19 +106,19 @@ class MeetActions {
                 }
             },
             chat: {
-                selector: '[aria-label="Chat with everyone"]'                
+                selector: '[aria-label="Chat with everyone"]'
             },
             attendees: {
-                selector: '[aria-label="Show everyone"]'                
+                selector: '[aria-label="Show everyone"]'
             },
             muteAudio: {
                 selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(1) > div > div > div'
             },
             hangup: {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(2) > div > div > div'     
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(2) > div > div > div'
             },
             muteVideo: {
-                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > div > div > div'     
+                selector: 'c-wiz > div > div > div:nth-child(9) > div:nth-child(3) > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > div > div > div'
             }
         }
     }
@@ -132,7 +134,7 @@ class MeetActions {
             });
             this.port.onMessage.addListener(this.handleMessage_);
         });
-        chrome.runtime.sendMessage({action: 'addTab'});
+        chrome.runtime.sendMessage({ action: 'addTab' });
     }
 
     detectState() {
@@ -146,12 +148,12 @@ class MeetActions {
         return windowState;
     }
 
-    async executeCommand(command, {port, message}) {
-        if (!command) return {success: true};
+    async executeCommand(command, { port, message }) {
+        if (!command) return { success: true };
         const state = this.detectState();
         if (!state) {
             console.error('no state', state);
-            return {success: false, error: 'no state detected'};
+            return { success: false, error: 'no state detected' };
         } else {
             console.log('current state', state);
         }
@@ -161,43 +163,43 @@ class MeetActions {
             const ctrl = ctrls[k];
             if (!ctrl) {
                 console.error('no control', k, state);
-                return {success: false, error: `no control for ${k}`};
+                return { success: false, error: `no control for ${k}` };
             }
             const elements = document.querySelectorAll(ctrl.selector);
-            
+
             if (!elements.length) {
                 console.log(`FATAL: selector found no element for ${k}; command ${command}`);
                 console.log(ctrl.selector, elements);
-                return {success: false, fatal: true, error: `FATAL: selector found no element for ${k}; command ${command}`};
+                return { success: false, fatal: true, error: `FATAL: selector found no element for ${k}; command ${command}` };
             }
             const element = elements[0];
             if (ctrl.redirect) {
                 message.success = true;
-                port.postMessage({message})
+                port.postMessage(message)
             } else if (ctrl.children) {
                 ctrls = ctrl.children;
             }
-            element.dispatchEvent(new Event('click', {bubbles: true}));
+            element.dispatchEvent(new Event('click', { bubbles: true }));
             console.log('clicked element', element);
             await new Promise((res, rej) => setTimeout(res, 1500));
-            
+
         }
-        return {success: true};
+        return { success: true };
     }
 
-    handleMessage_ = async (message, port) => {
+    handleMessage_ = async(message, port) => {
         try {
             console.log('handleMessage', message);
-            let rtn = Object.assign({success: true}, message);
+            let rtn = Object.assign({ success: true }, message);
             if (message.command) {
-                const result = await this.executeCommand(message.command, {port, message});
+                const result = await this.executeCommand(message.command, { port, message });
                 Object.assign(rtn, result);
             }
             port.postMessage(rtn);
-        } catch(e) {
+        } catch (e) {
             console.error(e);
-            port.postMessage(Object.assign({success: false, fatal: true, error: e.message}, message));
+            port.postMessage(Object.assign({ success: false, fatal: true, error: e.message }, message));
         }
-        
+
     }
 }
